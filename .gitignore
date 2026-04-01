@@ -1,0 +1,10 @@
+.idea
+.vscode
+config.php
+.env
+vendor/
+composer.lock
+public/uploads/animals/*
+!public/uploads/animals/.gitkeep
+.phpunit.result.cache
+.phpunit.cache/
