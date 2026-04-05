@@ -1,0 +1,71 @@
+services:
+  nginx:
+    build:
+      context: .
+      dockerfile: docker/nginx/Dockerfile
+    ports:
+      - "8080:80"
+    volumes:
+      - .:/app/
+    depends_on:
+      - php
+    networks:
+      - pg-network
+
+  db:
+    build:
+      context: .
+      dockerfile: docker/db/Dockerfile
+    env_file:
+      - .env
+    environment:
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_NAME}
+    ports:
+      - "5433:5432"
+    volumes:
+      - ./docker/db/init:/docker-entrypoint-initdb.d
+      - pg-data:/var/lib/postgresql/data
+    networks:
+      - pg-network
+
+  php:
+    build:
+      context: .
+      dockerfile: docker/php/Dockerfile
+    env_file:
+      - .env
+    environment:
+      DB_HOST: ${DB_HOST}
+      DB_PORT: ${DB_PORT}
+      DB_NAME: ${DB_NAME}
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+      APP_ENV: ${APP_ENV}
+      APP_URL: ${APP_URL}
+      SESSION_LIFETIME: ${SESSION_LIFETIME}
+      UPLOAD_MAX_BYTES: ${UPLOAD_MAX_BYTES}
+    volumes:
+      - .:/app
+    depends_on:
+      - db
+    networks:
+      - pg-network
+
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: furever-pgadmin
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@example.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+    ports:
+      - "5050:80"
+    networks:
+      - pg-network
+
+networks:
+  pg-network:
+
+volumes:
+  pg-data:
