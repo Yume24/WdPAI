@@ -1,0 +1,16 @@
+<header class="topbar">
+  <div class="topbar-left">
+    <button class="btn-icon sidebar-toggle-btn" id="sidebarToggle" aria-label="Toggle sidebar">
+      <i class="fa-solid fa-bars"></i>
+    </button>
+    <div class="topbar-search">
+      <i class="fa-solid fa-magnifying-glass"></i>
+      <input type="search" placeholder="Search animals, people..." aria-label="Search">
+    </div>
+  </div>
+  <div class="topbar-actions">
+    <a href="/profile" class="sidebar-avatar" style="text-decoration:none" title="<?= htmlspecialchars($currentUsername ?? 'Guest') ?>">
+      <?= htmlspecialchars(strtoupper(mb_substr($currentUsername ?? 'U', 0, 1))) ?>
+    </a>
+  </div>
+</header>

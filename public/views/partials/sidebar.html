@@ -1,0 +1,85 @@
+<?php
+$role = $currentRole ?? null;
+$canManage = in_array($role, ['admin', 'worker'], true);
+$isVolunteer = $role === 'volunteer';
+$isAdopter = $role === 'adopter';
+$isAdmin = $role === 'admin';
+?>
+<aside class="sidebar" id="adminSidebar">
+  <a href="/dashboard" class="sidebar-brand">
+    <div class="sidebar-brand-mark">F</div>
+    <span class="sidebar-brand-name">FurEver</span>
+  </a>
+
+  <nav class="sidebar-nav">
+    <span class="sidebar-section-label">Workspace</span>
+    <a href="/dashboard" class="sidebar-link <?= ($activeNav ?? '') === 'dashboard' ? 'active' : '' ?>">
+      <i class="fa-solid fa-gauge-high"></i>
+      Dashboard
+    </a>
+
+    <?php if ($canManage): ?>
+      <span class="sidebar-section-label">Management</span>
+      <a href="/animals" class="sidebar-link <?= ($activeNav ?? '') === 'animals' ? 'active' : '' ?>">
+        <i class="fa-solid fa-paw"></i> Animals
+      </a>
+      <a href="/adoptions" class="sidebar-link <?= ($activeNav ?? '') === 'adoptions' ? 'active' : '' ?>">
+        <i class="fa-solid fa-file-contract"></i> Adoptions
+      </a>
+      <a href="/volunteers" class="sidebar-link <?= ($activeNav ?? '') === 'volunteers' ? 'active' : '' ?>">
+        <i class="fa-solid fa-calendar-days"></i> Volunteers
+      </a>
+      <?php if ($isAdmin): ?>
+        <a href="/users" class="sidebar-link <?= ($activeNav ?? '') === 'users' ? 'active' : '' ?>">
+          <i class="fa-solid fa-user-gear"></i> Users
+        </a>
+      <?php endif; ?>
+    <?php endif; ?>
+
+    <?php if ($isVolunteer): ?>
+      <span class="sidebar-section-label">Volunteering</span>
+      <a href="/my-shifts" class="sidebar-link <?= ($activeNav ?? '') === 'my-shifts' ? 'active' : '' ?>">
+        <i class="fa-solid fa-calendar-days"></i> My Shifts
+      </a>
+      <a href="/volunteers" class="sidebar-link <?= ($activeNav ?? '') === 'volunteers' ? 'active' : '' ?>">
+        <i class="fa-solid fa-people-group"></i> Schedule
+      </a>
+      <a href="/animals" class="sidebar-link <?= ($activeNav ?? '') === 'animals' ? 'active' : '' ?>">
+        <i class="fa-solid fa-paw"></i> Browse Animals
+      </a>
+    <?php endif; ?>
+
+    <?php if ($isAdopter): ?>
+      <span class="sidebar-section-label">Adoption</span>
+      <a href="/animals" class="sidebar-link <?= ($activeNav ?? '') === 'animals' ? 'active' : '' ?>">
+        <i class="fa-solid fa-paw"></i> Browse Animals
+      </a>
+      <a href="/my-adoptions" class="sidebar-link <?= ($activeNav ?? '') === 'my-adoptions' ? 'active' : '' ?>">
+        <i class="fa-solid fa-file-contract"></i> My Requests
+      </a>
+    <?php endif; ?>
+
+    <span class="sidebar-section-label">Account</span>
+    <a href="/profile" class="sidebar-link <?= ($activeNav ?? '') === 'profile' ? 'active' : '' ?>">
+      <i class="fa-solid fa-user"></i> My Profile
+    </a>
+    <a href="/home" class="sidebar-link <?= ($activeNav ?? '') === 'home' ? 'active' : '' ?>">
+      <i class="fa-solid fa-globe"></i> Public Site
+    </a>
+  </nav>
+
+  <div class="sidebar-user">
+    <div class="sidebar-avatar"><?= htmlspecialchars(strtoupper(mb_substr($currentUsername ?? 'U', 0, 1))) ?></div>
+    <div class="sidebar-user-info">
+      <div class="sidebar-user-name"><?= htmlspecialchars($currentUsername ?? 'Guest') ?></div>
+      <div class="sidebar-user-role"><?= htmlspecialchars(ucfirst((string) ($currentRole ?? 'guest'))) ?></div>
+    </div>
+    <form method="POST" action="/logout" style="margin:0;flex-shrink:0">
+      <input type="hidden" name="_csrf" value="<?= htmlspecialchars($csrfToken ?? '', ENT_QUOTES) ?>">
+      <button type="submit" class="btn-icon" title="Sign out">
+        <i class="fa-solid fa-right-from-bracket"></i>
+      </button>
+    </form>
+  </div>
+</aside>
+<div class="sidebar-overlay" id="sidebarOverlay"></div>

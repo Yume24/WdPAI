@@ -1,0 +1,12 @@
+<?php if (!empty($flashes)): ?>
+  <div class="flash-stack">
+    <?php foreach ($flashes as $type => $messages): ?>
+      <?php foreach ((array) $messages as $msg): ?>
+        <div class="alert alert-<?= htmlspecialchars($type, ENT_QUOTES) ?>">
+          <i class="fa-solid <?= $type === 'success' ? 'fa-circle-check' : ($type === 'error' ? 'fa-circle-exclamation' : 'fa-circle-info') ?>"></i>
+          <span><?= htmlspecialchars((string) $msg) ?></span>
+        </div>
+      <?php endforeach; ?>
+    <?php endforeach; ?>
+  </div>
+<?php endif; ?>
