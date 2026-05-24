@@ -1,0 +1,179 @@
+<?php
+/** @var array $stats */
+$role = $currentRole ?? null;
+$roleLabels = [
+    'admin'     => 'shelter operations',
+    'worker'    => 'today\'s work',
+    'volunteer' => 'your shifts',
+    'adopter'   => 'your adoption journey',
+];
+$subLabel = $roleLabels[$role] ?? 'overview';
+?>
+<!doctype html>
+<html lang="en">
+<head>
+  <?php include __DIR__ . '/partials/head.html'; ?>
+</head>
+<body>
+<div class="admin-layout">
+
+  <?php include __DIR__ . '/partials/sidebar.html'; ?>
+  <?php include __DIR__ . '/partials/topbar.html'; ?>
+
+  <main class="admin-content">
+
+    <?php include __DIR__ . '/partials/flashes.html'; ?>
+
+    <div class="page-header">
+      <div class="page-header-text">
+        <h1 class="page-title">Dashboard</h1>
+        <p class="page-subtitle">Overview of <?= htmlspecialchars($subLabel) ?></p>
+      </div>
+      <?php if (in_array($role, ['admin','worker'], true)): ?>
+        <a href="/animals/create" class="btn btn-primary">
+          <i class="fa-solid fa-plus"></i> New Admission
+        </a>
+      <?php elseif ($role === 'adopter'): ?>
+        <a href="/animals" class="btn btn-primary">
+          <i class="fa-solid fa-paw"></i> Browse Animals
+        </a>
+      <?php elseif ($role === 'volunteer'): ?>
+        <a href="/my-shifts" class="btn btn-primary">
+          <i class="fa-solid fa-calendar-days"></i> My Shifts
+        </a>
+      <?php endif; ?>
+    </div>
+
+    <div class="stats-grid">
+      <div class="card stat-card">
+        <div class="stat-icon teal"><i class="fa-solid fa-paw"></i></div>
+        <div class="stat-label">Total Animals</div>
+        <div class="stat-value"><?= (int) ($stats['total_animals'] ?? 0) ?></div>
+      </div>
+      <div class="card stat-card">
+        <div class="stat-icon amber"><i class="fa-solid fa-file-contract"></i></div>
+        <div class="stat-label">Pending Adoptions</div>
+        <div class="stat-value"><?= (int) ($stats['pending_adoptions'] ?? 0) ?></div>
+      </div>
+      <div class="card stat-card">
+        <div class="stat-icon teal"><i class="fa-solid fa-calendar-days"></i></div>
+        <div class="stat-label">Volunteers This Week</div>
+        <div class="stat-value"><?= (int) ($stats['volunteers_week'] ?? 0) ?></div>
+        <div class="stat-delta"><?= (int) ($stats['shifts_week'] ?? 0) ?> shifts scheduled</div>
+      </div>
+      <div class="card stat-card">
+        <div class="stat-icon amber"><i class="fa-solid fa-heart"></i></div>
+        <div class="stat-label">Adopted</div>
+        <div class="stat-value"><?= (int) ($stats['adopted_total'] ?? 0) ?></div>
+      </div>
+    </div>
+
+    <div class="dashboard-grid">
+
+      <?php if (in_array($role, ['admin','worker'], true) && !empty($recentAdoptions)): ?>
+        <div class="card">
+          <div class="card-header">
+            <span class="text-heading text-base">Recent Adoption Requests</span>
+            <a href="/adoptions" class="btn btn-ghost btn-sm">View all</a>
+          </div>
+          <?php foreach (array_slice($recentAdoptions, 0, 6) as $req): ?>
+            <div class="activity-item">
+              <div class="activity-icon <?= $req->status === 'pending' ? 'amber' : 'teal' ?>">
+                <i class="fa-solid fa-file-contract"></i>
+              </div>
+              <span class="activity-text">
+                <strong><?= htmlspecialchars($req->applicantName ?? '—') ?></strong>
+                applied for
+                <strong><?= htmlspecialchars($req->animalName ?? '—') ?></strong>
+              </span>
+              <span class="badge <?= $req->badgeClass() ?>"><?= htmlspecialchars(ucfirst($req->status)) ?></span>
+            </div>
+          <?php endforeach; ?>
+        </div>
+      <?php endif; ?>
+
+      <?php if (!empty($users) && $role === 'admin'): ?>
+        <div class="card">
+          <div class="card-header">
+            <span class="text-heading text-base">Registered Users</span>
+            <span class="badge badge-available"><?= count($users) ?> total</span>
+          </div>
+          <?php foreach (array_slice($users, 0, 8) as $u): ?>
+            <div class="activity-item">
+              <div class="sidebar-avatar" style="width:32px;height:32px;font-size:0.75rem;flex-shrink:0">
+                <?= htmlspecialchars($u->initials()) ?>
+              </div>
+              <div style="flex:1;min-width:0">
+                <div class="text-sm font-bold text-heading" style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis">
+                  <?= htmlspecialchars($u->displayName()) ?>
+                </div>
+                <div class="text-xs text-muted" style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis">
+                  <?= htmlspecialchars($u->email) ?>
+                </div>
+              </div>
+              <span class="badge badge-available"><?= htmlspecialchars($u->roleName) ?></span>
+            </div>
+          <?php endforeach; ?>
+        </div>
+      <?php endif; ?>
+
+      <?php if (!empty($myRequests)): ?>
+        <div class="card">
+          <div class="card-header">
+            <span class="text-heading text-base">My Adoption Requests</span>
+            <a href="/my-adoptions" class="btn btn-ghost btn-sm">View all</a>
+          </div>
+          <?php foreach (array_slice($myRequests, 0, 6) as $req): ?>
+            <div class="activity-item">
+              <div class="activity-icon teal"><i class="fa-solid fa-paw"></i></div>
+              <span class="activity-text"><strong><?= htmlspecialchars($req->animalName ?? '—') ?></strong></span>
+              <span class="badge <?= $req->badgeClass() ?>"><?= htmlspecialchars(ucfirst($req->status)) ?></span>
+            </div>
+          <?php endforeach; ?>
+        </div>
+      <?php endif; ?>
+
+      <?php if (!empty($myShifts)): ?>
+        <div class="card">
+          <div class="card-header">
+            <span class="text-heading text-base">My Upcoming Shifts</span>
+            <a href="/my-shifts" class="btn btn-ghost btn-sm">View all</a>
+          </div>
+          <?php foreach (array_slice($myShifts, 0, 6) as $shift): ?>
+            <div class="activity-item">
+              <div class="activity-icon teal"><i class="fa-solid fa-calendar-days"></i></div>
+              <span class="activity-text">
+                <strong><?= htmlspecialchars(date('D, M j', strtotime($shift->shiftDate))) ?></strong>
+                · <?= htmlspecialchars($shift->timeRange()) ?>
+                · <?= htmlspecialchars($shift->taskDescription ?? '') ?>
+              </span>
+            </div>
+          <?php endforeach; ?>
+        </div>
+      <?php endif; ?>
+
+      <?php if (!empty($recentAudit)): ?>
+        <div class="card">
+          <div class="card-header">
+            <span class="text-heading text-base">Recent Activity (Audit Log)</span>
+          </div>
+          <?php foreach ($recentAudit as $row): ?>
+            <div class="activity-item">
+              <div class="activity-icon <?= $row['action'] === 'INSERT' ? 'teal' : 'amber' ?>">
+                <i class="fa-solid fa-clock-rotate-left"></i>
+              </div>
+              <span class="activity-text">
+                <?= htmlspecialchars($row['action']) ?> on <?= htmlspecialchars($row['entity_type']) ?>#<?= (int) $row['entity_id'] ?>
+              </span>
+              <span class="activity-time"><?= htmlspecialchars(date('M j H:i', strtotime($row['changed_at']))) ?></span>
+            </div>
+          <?php endforeach; ?>
+        </div>
+      <?php endif; ?>
+
+    </div>
+  </main>
+
+</div>
+</body>
+</html>
