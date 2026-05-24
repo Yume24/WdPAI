@@ -1,0 +1,148 @@
+<?php
+/** @var FurEver\Models\Animal[] $animals */
+/** @var FurEver\Models\Species[] $species */
+/** @var string[] $statuses */
+/** @var array $filters */
+$filters = $filters ?? [];
+?>
+<!doctype html>
+<html lang="en">
+<head>
+  <?php include __DIR__ . '/partials/head.html'; ?>
+</head>
+<body>
+<div class="admin-layout">
+
+  <?php include __DIR__ . '/partials/sidebar.html'; ?>
+  <?php include __DIR__ . '/partials/topbar.html'; ?>
+
+  <main class="admin-content">
+
+    <?php include __DIR__ . '/partials/flashes.html'; ?>
+
+    <div class="page-header">
+      <div class="page-header-text">
+        <h1 class="page-title">Animal Inventory</h1>
+        <p class="page-subtitle"><span id="animalCount"><?= count($animals) ?></span> animals match your filters</p>
+      </div>
+      <div style="display:flex;gap:0.75rem;align-items:center">
+        <button class="btn btn-ghost filter-toggle-btn" id="filterToggle">
+          <i class="fa-solid fa-sliders"></i> Filters
+        </button>
+        <?php if (!empty($canManage)): ?>
+          <a href="/animals/create" class="btn btn-primary">
+            <i class="fa-solid fa-plus"></i> Add Animal
+          </a>
+        <?php endif; ?>
+      </div>
+    </div>
+
+    <div class="animals-layout">
+
+      <aside class="filter-panel" id="filterPanel">
+        <div class="filter-panel-header">
+          <h3 class="filter-panel-title">Filters</h3>
+          <button class="btn-icon" id="filterClose" title="Close">
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+        </div>
+
+        <form id="animalsFilter" method="GET" action="/animals" data-fetch-grid>
+          <div class="filter-group">
+            <span class="filter-group-label">Species</span>
+            <label class="filter-option">
+              <input type="radio" name="species_id" value="" <?= empty($filters['species_id']) ? 'checked' : '' ?>>
+              Any
+            </label>
+            <?php foreach ($species as $s): ?>
+              <label class="filter-option">
+                <input type="radio" name="species_id" value="<?= (int) $s->id ?>"
+                       <?= ((string) ($filters['species_id'] ?? '')) === (string) $s->id ? 'checked' : '' ?>>
+                <?= htmlspecialchars($s->name) ?>
+              </label>
+            <?php endforeach; ?>
+          </div>
+
+          <div class="filter-group">
+            <span class="filter-group-label">Status</span>
+            <label class="filter-option">
+              <input type="radio" name="status" value="" <?= empty($filters['status']) ? 'checked' : '' ?>>
+              Any
+            </label>
+            <?php foreach ($statuses as $st): ?>
+              <label class="filter-option">
+                <input type="radio" name="status" value="<?= htmlspecialchars($st) ?>"
+                       <?= ($filters['status'] ?? '') === $st ? 'checked' : '' ?>>
+                <?= htmlspecialchars(ucfirst(str_replace('_',' ',$st))) ?>
+              </label>
+            <?php endforeach; ?>
+          </div>
+
+          <div class="filter-group">
+            <span class="filter-group-label">Gender</span>
+            <label class="filter-option">
+              <input type="radio" name="gender" value="" <?= empty($filters['gender']) ? 'checked' : '' ?>> Any
+            </label>
+            <label class="filter-option">
+              <input type="radio" name="gender" value="male" <?= ($filters['gender'] ?? '') === 'male' ? 'checked' : '' ?>> Male
+            </label>
+            <label class="filter-option">
+              <input type="radio" name="gender" value="female" <?= ($filters['gender'] ?? '') === 'female' ? 'checked' : '' ?>> Female
+            </label>
+          </div>
+
+          <button class="btn btn-primary" type="submit" style="width:100%;margin-top:0.5rem">Apply Filters</button>
+        </form>
+      </aside>
+
+      <section>
+        <div class="animals-main-header">
+          <form class="animals-search" method="GET" action="/animals" data-fetch-grid id="animalsSearch">
+            <i class="fa-solid fa-magnifying-glass"></i>
+            <input type="search" name="q" value="<?= htmlspecialchars((string) ($filters['q'] ?? '')) ?>" placeholder="Search by name, breed, description...">
+            <input type="hidden" name="species_id" value="<?= htmlspecialchars((string) ($filters['species_id'] ?? '')) ?>">
+            <input type="hidden" name="status"     value="<?= htmlspecialchars((string) ($filters['status'] ?? '')) ?>">
+            <input type="hidden" name="gender"     value="<?= htmlspecialchars((string) ($filters['gender'] ?? '')) ?>">
+          </form>
+        </div>
+
+        <div class="animals-grid" id="animalsGrid">
+          <?php if (empty($animals)): ?>
+            <p class="text-muted">No animals match your filters.</p>
+          <?php endif; ?>
+          <?php foreach ($animals as $animal): ?>
+            <a href="/animal?id=<?= $animal->id ?>" class="card animal-card">
+              <div class="animal-card-photo">
+                <?php if ($animal->photoPath): ?>
+                  <img src="/public/<?= htmlspecialchars($animal->photoPath) ?>" alt="<?= htmlspecialchars($animal->name) ?>" style="width:100%;height:100%;object-fit:cover">
+                <?php else: ?>
+                  <div class="animal-card-photo-placeholder">
+                    <i class="fa-solid <?= htmlspecialchars($animal->speciesIcon ?? 'fa-paw') ?>"></i>
+                  </div>
+                <?php endif; ?>
+                <span class="animal-card-badge badge <?= $animal->badgeClass() ?>">
+                  <?= htmlspecialchars($animal->statusLabel()) ?>
+                </span>
+              </div>
+              <div class="animal-card-body">
+                <h3 class="animal-card-name"><?= htmlspecialchars($animal->name) ?></h3>
+                <p class="animal-card-meta">
+                  <?= htmlspecialchars($animal->breed ?? '—') ?> ·
+                  <?= htmlspecialchars(ucfirst($animal->gender)) ?>
+                </p>
+                <div class="animal-card-footer">
+                  <span class="text-xs text-muted"><i class="fa-solid <?= htmlspecialchars($animal->speciesIcon ?? 'fa-paw') ?>"></i> <?= htmlspecialchars($animal->speciesName) ?></span>
+                  <span class="btn btn-outline btn-sm">View profile</span>
+                </div>
+              </div>
+            </a>
+          <?php endforeach; ?>
+        </div>
+      </section>
+
+    </div>
+  </main>
+
+</div>
+</body>
+</html>
