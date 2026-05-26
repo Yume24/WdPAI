@@ -1,0 +1,105 @@
+<?php
+/** @var FurEver\Models\AdoptionRequest[] $requests */
+$statusFilter = $statusFilter ?? 'all';
+?>
+<!doctype html>
+<html lang="en">
+<head>
+  <?php include __DIR__ . '/partials/head.html'; ?>
+</head>
+<body>
+<div class="admin-layout">
+
+  <?php include __DIR__ . '/partials/sidebar.html'; ?>
+  <?php include __DIR__ . '/partials/topbar.html'; ?>
+
+  <main class="admin-content">
+    <?php include __DIR__ . '/partials/flashes.html'; ?>
+
+    <div class="page-header">
+      <div class="page-header-text">
+        <h1 class="page-title">Adoption Requests</h1>
+        <p class="page-subtitle"><?= count($requests) ?> total requests</p>
+      </div>
+    </div>
+
+    <div class="filter-tabs">
+      <a href="/adoptions?status=all"      class="filter-tab <?= $statusFilter === 'all' ? 'active' : '' ?>">All</a>
+      <a href="/adoptions?status=pending"  class="filter-tab <?= $statusFilter === 'pending' ? 'active' : '' ?>">Pending</a>
+      <a href="/adoptions?status=approved" class="filter-tab <?= $statusFilter === 'approved' ? 'active' : '' ?>">Approved</a>
+      <a href="/adoptions?status=rejected" class="filter-tab <?= $statusFilter === 'rejected' ? 'active' : '' ?>">Rejected</a>
+    </div>
+
+    <div class="data-table-wrap">
+      <table class="data-table" id="adoptionsTable">
+        <thead>
+          <tr>
+            <th>Applicant</th>
+            <th>Animal</th>
+            <th>Submitted</th>
+            <th>Status</th>
+            <th>Reviewed by</th>
+            <?php if (!empty($canReview)): ?><th>Actions</th><?php endif; ?>
+          </tr>
+        </thead>
+        <tbody>
+          <?php if (empty($requests)): ?>
+            <tr>
+              <td colspan="<?= !empty($canReview) ? 6 : 5 ?>" class="text-muted" style="padding:1.5rem">
+                No adoption requests yet.
+              </td>
+            </tr>
+          <?php endif; ?>
+          <?php foreach ($requests as $req): ?>
+            <tr data-status="<?= htmlspecialchars($req->status) ?>" data-request-id="<?= (int) $req->id ?>">
+              <td>
+                <div class="table-avatar">
+                  <div class="table-avatar-circle">
+                    <?= htmlspecialchars(strtoupper(mb_substr($req->applicantName ?? 'U', 0, 1))) ?>
+                  </div>
+                  <div>
+                    <div class="table-avatar-name"><?= htmlspecialchars($req->applicantName ?? '—') ?></div>
+                    <div class="table-avatar-email"><?= htmlspecialchars($req->applicantEmail ?? '') ?></div>
+                  </div>
+                </div>
+              </td>
+              <td>
+                <a href="/animal?id=<?= (int) $req->animalId ?>" class="font-semibold text-heading">
+                  <?= htmlspecialchars($req->animalName ?? '—') ?>
+                  <span class="text-muted text-xs">(<?= htmlspecialchars($req->animalSpecies ?? '') ?>)</span>
+                </a>
+              </td>
+              <td class="text-muted"><?= htmlspecialchars(date('M j, Y', strtotime($req->submittedAt))) ?></td>
+              <td>
+                <span class="badge <?= $req->badgeClass() ?> js-status-badge"><?= htmlspecialchars(ucfirst($req->status)) ?></span>
+              </td>
+              <td class="text-muted"><?= htmlspecialchars($req->reviewerEmail ?? '—') ?></td>
+              <?php if (!empty($canReview)): ?>
+                <td>
+                  <div class="table-actions">
+                    <?php if ($req->status === 'pending'): ?>
+                      <form method="POST" action="/api/adoptions/<?= (int) $req->id ?>/approve" class="js-adoption-action" data-action="approve" style="display:inline">
+                        <input type="hidden" name="_csrf" value="<?= htmlspecialchars($csrfToken, ENT_QUOTES) ?>">
+                        <button class="btn btn-primary btn-sm" type="submit">Approve</button>
+                      </form>
+                      <form method="POST" action="/api/adoptions/<?= (int) $req->id ?>/reject" class="js-adoption-action" data-action="reject" style="display:inline">
+                        <input type="hidden" name="_csrf" value="<?= htmlspecialchars($csrfToken, ENT_QUOTES) ?>">
+                        <button class="btn btn-outline btn-sm" type="submit">Reject</button>
+                      </form>
+                    <?php else: ?>
+                      <span class="text-muted text-xs">Decided</span>
+                    <?php endif; ?>
+                  </div>
+                </td>
+              <?php endif; ?>
+            </tr>
+          <?php endforeach; ?>
+        </tbody>
+      </table>
+    </div>
+
+  </main>
+
+</div>
+</body>
+</html>
