@@ -1,0 +1,101 @@
+<?php
+/** @var FurEver\Models\User[] $users */
+/** @var FurEver\Models\Role[] $roles */
+?>
+<!doctype html>
+<html lang="en">
+<head>
+  <?php include __DIR__ . '/partials/head.html'; ?>
+</head>
+<body>
+<div class="admin-layout">
+
+  <?php include __DIR__ . '/partials/sidebar.html'; ?>
+  <?php include __DIR__ . '/partials/topbar.html'; ?>
+
+  <main class="admin-content">
+    <?php include __DIR__ . '/partials/flashes.html'; ?>
+
+    <div class="page-header">
+      <div class="page-header-text">
+        <h1 class="page-title">User Management</h1>
+        <p class="page-subtitle"><?= count($users) ?> registered users</p>
+      </div>
+    </div>
+
+    <div class="stats-grid">
+      <?php foreach (['admin','worker','volunteer','adopter'] as $r): ?>
+        <div class="card stat-card">
+          <div class="stat-icon <?= in_array($r, ['admin','worker'], true) ? 'teal' : 'amber' ?>">
+            <i class="fa-solid fa-user"></i>
+          </div>
+          <div class="stat-label"><?= htmlspecialchars(ucfirst($r)) ?>s</div>
+          <div class="stat-value"><?= (int) ($countsByRole[$r] ?? 0) ?></div>
+        </div>
+      <?php endforeach; ?>
+    </div>
+
+    <div class="data-table-wrap">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>User</th>
+            <th>Email</th>
+            <th>Role</th>
+            <th>Status</th>
+            <th>Created</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <?php foreach ($users as $u): ?>
+            <tr>
+              <td>
+                <div class="table-avatar">
+                  <div class="table-avatar-circle"><?= htmlspecialchars($u->initials()) ?></div>
+                  <div>
+                    <div class="table-avatar-name"><?= htmlspecialchars($u->displayName()) ?></div>
+                    <div class="table-avatar-email"><?= htmlspecialchars($u->username) ?></div>
+                  </div>
+                </div>
+              </td>
+              <td class="text-muted"><?= htmlspecialchars($u->email) ?></td>
+              <td>
+                <form method="POST" action="/users/<?= (int) $u->id ?>/role" style="display:flex;gap:0.375rem;margin:0">
+                  <input type="hidden" name="_csrf" value="<?= htmlspecialchars($csrfToken, ENT_QUOTES) ?>">
+                  <select name="role_id" class="form-input form-select text-sm" style="padding:0.375rem 1.75rem 0.375rem 0.625rem">
+                    <?php foreach ($roles as $role): ?>
+                      <option value="<?= (int) $role->id ?>" <?= $role->id === $u->roleId ? 'selected' : '' ?>>
+                        <?= htmlspecialchars($role->name) ?>
+                      </option>
+                    <?php endforeach; ?>
+                  </select>
+                  <button class="btn btn-outline btn-sm" type="submit">Save</button>
+                </form>
+              </td>
+              <td>
+                <?php if ($u->isActive): ?>
+                  <span class="badge badge-available">Active</span>
+                <?php else: ?>
+                  <span class="badge badge-rejected">Disabled</span>
+                <?php endif; ?>
+              </td>
+              <td class="text-muted"><?= htmlspecialchars(date('M j, Y', strtotime($u->createdAt ?? 'now'))) ?></td>
+              <td>
+                <form method="POST" action="/users/<?= (int) $u->id ?>/toggle" style="margin:0">
+                  <input type="hidden" name="_csrf" value="<?= htmlspecialchars($csrfToken, ENT_QUOTES) ?>">
+                  <button class="btn btn-ghost btn-sm" type="submit">
+                    <?= $u->isActive ? 'Disable' : 'Enable' ?>
+                  </button>
+                </form>
+              </td>
+            </tr>
+          <?php endforeach; ?>
+        </tbody>
+      </table>
+    </div>
+  </main>
+
+</div>
+</body>
+</html>
