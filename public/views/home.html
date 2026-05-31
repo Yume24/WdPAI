@@ -1,0 +1,139 @@
+<?php
+/** @var FurEver\Models\Animal[] $featured */
+/** @var FurEver\Models\Species[] $species */
+$featured = $featured ?? [];
+$stats = $stats ?? [];
+?>
+<!doctype html>
+<html lang="en">
+<head>
+  <?php include __DIR__ . '/partials/head.html'; ?>
+</head>
+<body>
+
+<nav class="home-nav">
+  <a href="/home" class="home-nav-logo">
+    <div class="auth-logo-mark"><i class="fa-solid fa-paw"></i></div>
+    <span style="font-size:1.25rem;font-weight:800;color:var(--color-text-heading)">FurEver</span>
+  </a>
+  <div class="home-nav-actions">
+    <?php if (!empty($isLoggedIn)): ?>
+      <a href="/dashboard" class="btn btn-ghost btn-sm">Dashboard</a>
+      <a href="/my-adoptions" class="btn btn-outline btn-sm">My Requests</a>
+    <?php else: ?>
+      <a href="/login" class="btn btn-outline btn-sm">Sign in</a>
+      <a href="/register" class="btn btn-primary btn-sm">Get started</a>
+    <?php endif; ?>
+  </div>
+</nav>
+
+<section class="home-hero">
+  <h1 class="home-hero-title">Find Your FurEver Friend</h1>
+  <p class="home-hero-sub">Browse animals waiting for a loving home. Every adoption gives a second chance.</p>
+  <form action="/animals" method="GET" class="home-hero-search">
+    <i class="fa-solid fa-magnifying-glass" style="color:var(--color-text-muted)"></i>
+    <input type="search" name="q" placeholder="Search by name, breed, or species...">
+    <button class="btn btn-primary" type="submit">Search</button>
+  </form>
+</section>
+
+<div style="background:var(--color-card);border-bottom:1px solid var(--color-border)">
+  <div class="home-section" style="padding:1.5rem 2rem;display:flex;gap:2rem;align-items:center;flex-wrap:wrap;max-width:1200px">
+    <div style="display:flex;align-items:center;gap:0.625rem">
+      <div class="stat-icon teal" style="margin:0;width:36px;height:36px;font-size:0.9rem"><i class="fa-solid fa-paw"></i></div>
+      <div><span class="font-extrabold text-heading"><?= (int) ($stats['available'] ?? 0) ?></span> <span class="text-sm text-muted">animals available</span></div>
+    </div>
+    <div style="display:flex;align-items:center;gap:0.625rem">
+      <div class="stat-icon amber" style="margin:0;width:36px;height:36px;font-size:0.9rem"><i class="fa-solid fa-heart"></i></div>
+      <div><span class="font-extrabold text-heading"><?= (int) ($stats['adopted'] ?? 0) ?></span> <span class="text-sm text-muted">happy adoptions</span></div>
+    </div>
+    <div style="display:flex;align-items:center;gap:0.625rem">
+      <div class="stat-icon teal" style="margin:0;width:36px;height:36px;font-size:0.9rem"><i class="fa-solid fa-house-heart"></i></div>
+      <div><span class="font-extrabold text-heading"><?= (int) ($stats['total'] ?? 0) ?></span> <span class="text-sm text-muted">in our care</span></div>
+    </div>
+    <div style="margin-left:auto">
+      <a href="/animals" class="btn btn-primary btn-sm">
+        Browse all animals <i class="fa-solid fa-arrow-right"></i>
+      </a>
+    </div>
+  </div>
+</div>
+
+<section class="home-section">
+  <h2 class="home-section-title">Animals looking for a home</h2>
+  <p class="home-section-sub">All animals are vaccinated and ready for adoption.</p>
+
+  <div class="pill-filters">
+    <a href="/animals" class="pill-filter active">All</a>
+    <?php foreach ($species ?? [] as $s): ?>
+      <a href="/animals?species_id=<?= (int) $s->id ?>" class="pill-filter"><?= htmlspecialchars($s->name) ?></a>
+    <?php endforeach; ?>
+  </div>
+
+  <div class="animals-grid">
+    <?php foreach ($featured as $animal): ?>
+      <a href="/animal?id=<?= (int) $animal->id ?>" class="card animal-card">
+        <div class="animal-card-photo">
+          <?php if ($animal->photoPath): ?>
+            <img src="/public/<?= htmlspecialchars($animal->photoPath) ?>" alt="<?= htmlspecialchars($animal->name) ?>" style="width:100%;height:100%;object-fit:cover">
+          <?php else: ?>
+            <div class="animal-card-photo-placeholder">
+              <i class="fa-solid <?= htmlspecialchars($animal->speciesIcon ?? 'fa-paw') ?>"></i>
+            </div>
+          <?php endif; ?>
+          <span class="animal-card-badge badge <?= $animal->badgeClass() ?>"><?= htmlspecialchars($animal->statusLabel()) ?></span>
+        </div>
+        <div class="animal-card-body">
+          <h3 class="animal-card-name"><?= htmlspecialchars($animal->name) ?></h3>
+          <p class="animal-card-meta"><?= htmlspecialchars($animal->breed ?? '—') ?> · <?= htmlspecialchars($animal->speciesName) ?></p>
+          <div class="animal-card-footer">
+            <span class="text-xs text-muted"><i class="fa-solid fa-location-dot"></i> FurEver Shelter</span>
+            <span class="btn btn-outline btn-sm">Meet me</span>
+          </div>
+        </div>
+      </a>
+    <?php endforeach; ?>
+    <?php if (empty($featured)): ?>
+      <p class="text-muted">No animals available right now — please check back soon.</p>
+    <?php endif; ?>
+  </div>
+
+  <div style="text-align:center;margin-top:2rem">
+    <a href="/animals" class="btn btn-outline">
+      View all animals <i class="fa-solid fa-arrow-right"></i>
+    </a>
+  </div>
+</section>
+
+<section style="background:var(--color-sidebar-bg);padding:3rem 0">
+  <div class="home-section" style="padding-top:0;padding-bottom:0">
+    <h2 class="home-section-title" style="text-align:center;margin-bottom:0.5rem">How adoption works</h2>
+    <p class="home-section-sub" style="text-align:center;margin-bottom:2.5rem">Three simple steps to give an animal a forever home</p>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1.5rem">
+      <?php
+        $steps = [
+          ['icon' => 'fa-magnifying-glass', 'step' => '01', 'title' => 'Browse animals',   'desc' => 'Search our database and find your perfect match.'],
+          ['icon' => 'fa-file-contract',    'step' => '02', 'title' => 'Submit a request', 'desc' => 'Fill in a short adoption application for your favourite.'],
+          ['icon' => 'fa-house-heart',      'step' => '03', 'title' => 'Welcome home!',    'desc' => 'After approval, bring your new companion home.'],
+        ];
+      ?>
+      <?php foreach ($steps as $s): ?>
+        <div class="card card-body" style="text-align:center">
+          <div style="font-size:2rem;font-weight:800;color:var(--color-primary);opacity:0.2;line-height:1"><?= $s['step'] ?></div>
+          <div class="stat-icon teal" style="margin:0.5rem auto 1rem"><i class="fa-solid <?= $s['icon'] ?>"></i></div>
+          <h3 style="font-size:1rem;font-weight:700;color:var(--color-text-heading);margin-bottom:0.5rem"><?= $s['title'] ?></h3>
+          <p class="text-sm text-muted"><?= $s['desc'] ?></p>
+        </div>
+      <?php endforeach; ?>
+    </div>
+  </div>
+</section>
+
+<footer class="home-footer">
+  <p>&copy; <?= date('Y') ?> FurEver · All rights reserved ·
+    <a href="/dashboard">Staff portal</a>
+  </p>
+</footer>
+
+</body>
+</html>

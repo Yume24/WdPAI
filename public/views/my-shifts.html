@@ -1,0 +1,99 @@
+<?php
+/** @var FurEver\Models\VolunteerShift[] $myShifts */
+/** @var FurEver\Models\VolunteerShift[] $allShifts */
+/** @var array<int,bool> $signedUpIds */
+$signedUpIds = $signedUpIds ?? [];
+?>
+<!doctype html>
+<html lang="en">
+<head>
+  <?php include __DIR__ . '/partials/head.html'; ?>
+</head>
+<body>
+<div class="admin-layout">
+
+  <?php include __DIR__ . '/partials/sidebar.html'; ?>
+  <?php include __DIR__ . '/partials/topbar.html'; ?>
+
+  <main class="admin-content">
+    <?php include __DIR__ . '/partials/flashes.html'; ?>
+
+    <div class="page-header">
+      <div class="page-header-text">
+        <h1 class="page-title">My Shifts</h1>
+        <p class="page-subtitle">Your upcoming volunteer commitments and shifts open for sign-up.</p>
+      </div>
+    </div>
+
+    <div class="dashboard-grid">
+
+      <div class="card">
+        <div class="card-header">
+          <span class="text-heading text-base">My upcoming shifts</span>
+          <span class="badge badge-available"><?= count($myShifts) ?></span>
+        </div>
+        <?php if (empty($myShifts)): ?>
+          <div class="card-body"><p class="text-sm text-muted">You're not signed up for any upcoming shifts. Pick one on the right to get started.</p></div>
+        <?php else: ?>
+          <?php foreach ($myShifts as $shift): ?>
+            <div class="activity-item">
+              <div class="activity-icon teal"><i class="fa-solid fa-calendar-days"></i></div>
+              <div style="flex:1">
+                <div class="text-sm font-bold text-heading">
+                  <?= htmlspecialchars(date('D, M j', strtotime($shift->shiftDate))) ?> · <?= htmlspecialchars($shift->timeRange()) ?>
+                </div>
+                <div class="text-xs text-muted">
+                  <?= htmlspecialchars($shift->taskDescription ?? 'Volunteer shift') ?>
+                  <?php if ($shift->location): ?>· <?= htmlspecialchars($shift->location) ?><?php endif; ?>
+                </div>
+              </div>
+              <form method="POST" action="/api/shifts/<?= (int) $shift->id ?>/drop" class="js-shift-drop" style="margin:0">
+                <input type="hidden" name="_csrf" value="<?= htmlspecialchars($csrfToken, ENT_QUOTES) ?>">
+                <button class="btn btn-ghost btn-sm" type="submit">Drop</button>
+              </form>
+            </div>
+          <?php endforeach; ?>
+        <?php endif; ?>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <span class="text-heading text-base">Open shifts (next 14 days)</span>
+        </div>
+        <?php if (empty($allShifts)): ?>
+          <div class="card-body"><p class="text-sm text-muted">No shifts scheduled yet.</p></div>
+        <?php else: ?>
+          <?php foreach ($allShifts as $shift): ?>
+            <?php $signedUp = isset($signedUpIds[$shift->id]); ?>
+            <div class="activity-item">
+              <div class="activity-icon <?= $signedUp ? 'teal' : 'amber' ?>">
+                <i class="fa-solid fa-clock"></i>
+              </div>
+              <div style="flex:1">
+                <div class="text-sm font-bold text-heading">
+                  <?= htmlspecialchars(date('D, M j', strtotime($shift->shiftDate))) ?> · <?= htmlspecialchars($shift->timeRange()) ?>
+                </div>
+                <div class="text-xs text-muted">
+                  <?= htmlspecialchars($shift->taskDescription ?? 'Volunteer shift') ?>
+                  <?php if ($shift->location): ?>· <?= htmlspecialchars($shift->location) ?><?php endif; ?>
+                </div>
+              </div>
+              <?php if ($signedUp): ?>
+                <span class="badge badge-available">Joined</span>
+              <?php else: ?>
+                <form method="POST" action="/api/shifts/<?= (int) $shift->id ?>/signup" class="js-shift-signup" style="margin:0">
+                  <input type="hidden" name="_csrf" value="<?= htmlspecialchars($csrfToken, ENT_QUOTES) ?>">
+                  <button class="btn btn-primary btn-sm" type="submit">Sign up</button>
+                </form>
+              <?php endif; ?>
+            </div>
+          <?php endforeach; ?>
+        <?php endif; ?>
+      </div>
+
+    </div>
+  </main>
+
+</div>
+</body>
+</html>

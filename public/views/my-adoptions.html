@@ -1,0 +1,63 @@
+<?php
+/** @var FurEver\Models\AdoptionRequest[] $requests */
+?>
+<!doctype html>
+<html lang="en">
+<head>
+  <?php include __DIR__ . '/partials/head.html'; ?>
+</head>
+<body>
+<div class="admin-layout">
+
+  <?php include __DIR__ . '/partials/sidebar.html'; ?>
+  <?php include __DIR__ . '/partials/topbar.html'; ?>
+
+  <main class="admin-content">
+    <?php include __DIR__ . '/partials/flashes.html'; ?>
+
+    <div class="page-header">
+      <div class="page-header-text">
+        <h1 class="page-title">My Adoption Requests</h1>
+        <p class="page-subtitle"><?= count($requests) ?> request<?= count($requests) === 1 ? '' : 's' ?> on file</p>
+      </div>
+      <a href="/animals" class="btn btn-primary">
+        <i class="fa-solid fa-paw"></i> Browse animals
+      </a>
+    </div>
+
+    <?php if (empty($requests)): ?>
+      <div class="card"><div class="card-body">
+        <p class="text-muted">You haven't submitted any adoption requests yet. Browse our animals and apply for the one you love.</p>
+      </div></div>
+    <?php else: ?>
+      <div style="display:grid;gap:1rem">
+        <?php foreach ($requests as $req): ?>
+          <div class="card"><div class="card-body" style="display:flex;gap:1rem;align-items:flex-start;flex-wrap:wrap">
+            <div style="flex:1;min-width:240px">
+              <div style="display:flex;align-items:center;gap:0.75rem;margin-bottom:0.5rem">
+                <a href="/animal?id=<?= (int) $req->animalId ?>" class="text-heading font-bold">
+                  <?= htmlspecialchars($req->animalName ?? '—') ?>
+                </a>
+                <span class="badge <?= $req->badgeClass() ?>"><?= htmlspecialchars(ucfirst($req->status)) ?></span>
+              </div>
+              <div class="text-sm text-muted">Submitted <?= htmlspecialchars(date('M j, Y H:i', strtotime($req->submittedAt))) ?></div>
+              <?php if ($req->message): ?>
+                <p class="text-sm" style="margin-top:0.5rem;color:var(--color-text-body)"><?= htmlspecialchars($req->message) ?></p>
+              <?php endif; ?>
+              <?php if ($req->reviewedAt): ?>
+                <div class="text-xs text-muted" style="margin-top:0.5rem">
+                  Reviewed <?= htmlspecialchars(date('M j, Y H:i', strtotime($req->reviewedAt))) ?>
+                  <?php if ($req->decisionNotes): ?>· “<?= htmlspecialchars($req->decisionNotes) ?>”<?php endif; ?>
+                </div>
+              <?php endif; ?>
+            </div>
+            <a href="/animal?id=<?= (int) $req->animalId ?>" class="btn btn-outline btn-sm">View animal</a>
+          </div></div>
+        <?php endforeach; ?>
+      </div>
+    <?php endif; ?>
+  </main>
+
+</div>
+</body>
+</html>
