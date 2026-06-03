@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><?= htmlspecialchars($title ?? 'Bad request – FurEver') ?></title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/public/styles/main.css">
+  <script src="https://kit.fontawesome.com/8fd9367667.js" crossorigin="anonymous"></script>
+</head>
+<body>
+<div class="error-page">
+  <div class="error-code">400</div>
+  <h1 class="error-title">Bad request</h1>
+  <p class="error-message"><?= htmlspecialchars($message ?? 'The request could not be processed.') ?></p>
+  <div style="display:flex;gap:0.75rem;flex-wrap:wrap;justify-content:center">
+    <a href="/dashboard" class="btn btn-primary"><i class="fa-solid fa-gauge-high"></i> Dashboard</a>
+    <a href="/home" class="btn btn-outline"><i class="fa-solid fa-house"></i> Home</a>
+  </div>
+</div>
+</body>
+</html>
