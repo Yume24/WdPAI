@@ -11,9 +11,11 @@ final class Session
         }
 
         $lifetime = Env::int('SESSION_LIFETIME', 7200);
+        $secure   = Env::isHttps() || Env::bool('APP_FORCE_HTTPS', false);
         session_set_cookie_params([
             'lifetime' => $lifetime,
             'path'     => '/',
+            'secure'   => $secure,
             'httponly' => true,
             'samesite' => 'Lax',
         ]);

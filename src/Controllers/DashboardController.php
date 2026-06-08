@@ -21,7 +21,7 @@ final class DashboardController extends AppController
         $adoptions = new AdoptionsRepository();
         $shifts = new VolunteerShiftsRepository();
         $assignments = new VolunteerAssignmentsRepository();
-        $users = new UsersRepository();
+        $users = UsersRepository::getInstance();
         $audit = new AuditLogRepository();
 
         $animalCounts = $animals->counts();

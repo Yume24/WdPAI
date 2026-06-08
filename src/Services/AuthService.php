@@ -6,6 +6,7 @@ use FurEver\Core\Database;
 use FurEver\Core\Session;
 use FurEver\Models\Role;
 use FurEver\Models\User;
+use FurEver\Repositories\LoginAttemptsRepository;
 use FurEver\Repositories\RolesRepository;
 use FurEver\Repositories\UserProfilesRepository;
 use FurEver\Repositories\UsersRepository;
@@ -14,18 +15,23 @@ use RuntimeException;
 
 final class AuthService
 {
+    private const RATE_LIMIT_MAX     = 5;
+    private const RATE_LIMIT_WINDOW  = 10; // minutes
+
     public function __construct(
         private UsersRepository $users,
         private RolesRepository $roles,
         private UserProfilesRepository $profiles,
+        private LoginAttemptsRepository $attempts,
     ) {}
 
     public static function create(): self
     {
         return new self(
-            new UsersRepository(),
+            UsersRepository::getInstance(),
             new RolesRepository(),
-            new UserProfilesRepository()
+            new UserProfilesRepository(),
+            new LoginAttemptsRepository()
         );
     }
 
@@ -75,13 +81,21 @@ final class AuthService
 
     public function login(string $email, string $password): User
     {
+        $ip = $_SERVER['REMOTE_ADDR'] ?? '0.0.0.0';
+        if ($this->attempts->recentFailuresByIp($ip, self::RATE_LIMIT_WINDOW) >= self::RATE_LIMIT_MAX) {
+            throw new InvalidArgumentException(
+                'Too many failed attempts. Please wait a few minutes and try again.'
+            );
+        }
+
         $user = $this->users->findByEmail($email);
-        if (!$user || !$user->isActive) {
+        if (!$user || !$user->isActive || !password_verify($password, $user->password)) {
+            $this->attempts->record($ip, $email, false);
             throw new InvalidArgumentException('Invalid credentials.');
         }
-        if (!password_verify($password, $user->password)) {
-            throw new InvalidArgumentException('Invalid credentials.');
-        }
+
+        $this->attempts->record($ip, $email, true);
+        $this->attempts->clearForEmail($email);
 
         Session::regenerate();
         Session::set('user_id', $user->id);

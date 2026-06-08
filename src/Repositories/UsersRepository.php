@@ -7,6 +7,13 @@ use PDO;
 
 class UsersRepository extends Repository
 {
+    private static ?self $instance = null;
+
+    public static function getInstance(): self
+    {
+        return self::$instance ??= new self();
+    }
+
     private const SELECT_BASE = '
         SELECT u.id, u.username, u.email, u.password, u.role_id, u.is_active, u.created_at,
                r.name AS role_name,

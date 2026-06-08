@@ -275,4 +275,18 @@ CREATE TRIGGER tr_animals_audit
 AFTER INSERT OR UPDATE OR DELETE ON animals
 FOR EACH ROW EXECUTE FUNCTION trg_audit_animal_change();
 
+-- =============================================================================
+-- Login attempts — backing store for brute-force rate limiting
+-- =============================================================================
+
+CREATE TABLE login_attempts (
+    id            SERIAL PRIMARY KEY,
+    ip_address    INET        NOT NULL,
+    email         VARCHAR(255),
+    attempted_at  TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    success       BOOLEAN     NOT NULL DEFAULT FALSE
+);
+CREATE INDEX idx_login_attempts_ip_time    ON login_attempts(ip_address, attempted_at);
+CREATE INDEX idx_login_attempts_email_time ON login_attempts(email, attempted_at);
+
 COMMIT;

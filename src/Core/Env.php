@@ -46,4 +46,27 @@ final class Env
         $value = self::get($key);
         return $value === null ? $default : (int) $value;
     }
+
+    public static function bool(string $key, bool $default = false): bool
+    {
+        $value = self::get($key);
+        if ($value === null) {
+            return $default;
+        }
+        return in_array(strtolower($value), ['1', 'true', 'yes', 'on'], true);
+    }
+
+    public static function isHttps(): bool
+    {
+        if (!empty($_SERVER['HTTPS']) && strtolower((string) $_SERVER['HTTPS']) !== 'off') {
+            return true;
+        }
+        if (($_SERVER['HTTP_X_FORWARDED_PROTO'] ?? '') === 'https') {
+            return true;
+        }
+        if ((int) ($_SERVER['SERVER_PORT'] ?? 0) === 443) {
+            return true;
+        }
+        return false;
+    }
 }

@@ -13,7 +13,7 @@ final class ProfileController extends AppController
 
     public function __construct()
     {
-        $this->users = new UsersRepository();
+        $this->users = UsersRepository::getInstance();
         $this->profiles = new UserProfilesRepository();
     }
 

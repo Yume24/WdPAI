@@ -24,8 +24,8 @@ final class SecurityController extends AppController
             $password = (string) $this->postParam('password', '');
 
             $v = (new Validator(['email' => $email, 'password' => $password]))
-                ->required('email')->email('email')
-                ->required('password');
+                ->required('email')->email('email')->maxLength('email', 254)
+                ->required('password')->maxLength('password', 128);
             if ($v->fails()) {
                 $this->render('login', ['messages' => $v->firstErrorString()]);
                 return;
@@ -56,9 +56,9 @@ final class SecurityController extends AppController
             $confirm  = (string) $this->postParam('password2', '');
 
             $v = (new Validator(compact('email', 'username', 'password', 'confirm') + ['password2' => $confirm]))
-                ->required('email')->email('email')
-                ->required('username')->minLength('username', 3)
-                ->required('password')->minLength('password', 8)
+                ->required('email')->email('email')->maxLength('email', 254)
+                ->required('username')->minLength('username', 3)->maxLength('username', 50)
+                ->required('password')->minLength('password', 8)->maxLength('password', 128)
                 ->matches('password', 'password2', 'must match the confirmation');
             if ($v->fails()) {
                 $this->render('register', ['messages' => $v->firstErrorString()]);

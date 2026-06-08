@@ -42,6 +42,15 @@ final class Validator
         return $this;
     }
 
+    public function maxLength(string $field, int $max, string $message = null): self
+    {
+        $value = $this->data[$field] ?? '';
+        if (is_string($value) && strlen($value) > $max) {
+            $this->errors[$field][] = $message ?? "must be at most $max characters";
+        }
+        return $this;
+    }
+
     public function in(string $field, array $allowed, string $message = null): self
     {
         $value = $this->data[$field] ?? null;

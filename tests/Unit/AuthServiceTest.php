@@ -7,6 +7,7 @@ namespace FurEver\Tests\Unit;
 use FurEver\Core\Database;
 use FurEver\Models\Role;
 use FurEver\Models\User;
+use FurEver\Repositories\LoginAttemptsRepository;
 use FurEver\Repositories\RolesRepository;
 use FurEver\Repositories\UserProfilesRepository;
 use FurEver\Repositories\UsersRepository;
@@ -36,6 +37,13 @@ final class AuthServiceTest extends TestCase
             CREATE TABLE user_profiles (
                 user_id INTEGER PRIMARY KEY,
                 full_name TEXT, phone TEXT, address TEXT, bio TEXT, avatar_path TEXT
+            );
+            CREATE TABLE login_attempts (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                ip_address TEXT NOT NULL,
+                email TEXT,
+                attempted_at TEXT DEFAULT CURRENT_TIMESTAMP,
+                success INTEGER DEFAULT 0
             );
             INSERT INTO roles (name) VALUES ('admin'),('worker'),('volunteer'),('adopter');
         ");
@@ -113,6 +121,33 @@ final class AuthServiceTest extends TestCase
                         ':id' => $userId, ':fn' => $fullName, ':ph' => $phone,
                         ':ad' => $address, ':bi' => $bio, ':av' => $avatarPath,
                     ]);
+                }
+            },
+            new class extends LoginAttemptsRepository {
+                public function record(string $ip, ?string $email, bool $success): void
+                {
+                    $stmt = $this->pdo->prepare(
+                        'INSERT INTO login_attempts (ip_address, email, success) VALUES (:ip, :email, :ok)'
+                    );
+                    $stmt->execute([':ip' => $ip, ':email' => $email, ':ok' => $success ? 1 : 0]);
+                }
+
+                public function recentFailuresByIp(string $ip, int $windowMinutes): int
+                {
+                    $stmt = $this->pdo->prepare(
+                        "SELECT COUNT(*) FROM login_attempts
+                          WHERE ip_address = :ip
+                            AND success = 0
+                            AND attempted_at > datetime('now', :win)"
+                    );
+                    $stmt->execute([':ip' => $ip, ':win' => '-' . $windowMinutes . ' minutes']);
+                    return (int) $stmt->fetchColumn();
+                }
+
+                public function clearForEmail(string $email): void
+                {
+                    $stmt = $this->pdo->prepare('DELETE FROM login_attempts WHERE email = :email AND success = 0');
+                    $stmt->execute([':email' => $email]);
                 }
             },
         );

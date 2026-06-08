@@ -14,7 +14,7 @@ final class UsersController extends AppController
 
     public function __construct()
     {
-        $this->users = new UsersRepository();
+        $this->users = UsersRepository::getInstance();
         $this->roles = new RolesRepository();
     }
 

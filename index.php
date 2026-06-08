@@ -15,6 +15,17 @@ if (is_file(__DIR__ . '/config.php')) {
     require_once __DIR__ . '/config.php';
 }
 
+if (\FurEver\Core\Env::bool('APP_FORCE_HTTPS', false) && !\FurEver\Core\Env::isHttps()) {
+    $host = $_SERVER['HTTP_HOST'] ?? 'localhost';
+    $uri  = $_SERVER['REQUEST_URI'] ?? '/';
+    header('Location: https://' . $host . $uri, true, 301);
+    exit;
+}
+
+if (\FurEver\Core\Env::isHttps()) {
+    header('Strict-Transport-Security: max-age=31536000; includeSubDomains');
+}
+
 \FurEver\Core\Session::start();
 
 set_error_handler(static function (int $errno, string $errstr, string $errfile = '', int $errline = 0): bool {
