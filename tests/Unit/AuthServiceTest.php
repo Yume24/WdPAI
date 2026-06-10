@@ -23,7 +23,7 @@ final class AuthServiceTest extends TestCase
 
     protected function setUp(): void
     {
-        // SQLite-in-memory test DB. The schema is intentionally minimal — just enough for the auth flow.
+        // In-memory SQLite with just enough schema for the auth flow.
         $this->pdo = new PDO('sqlite::memory:');
         $this->pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
         $this->pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
@@ -49,7 +49,7 @@ final class AuthServiceTest extends TestCase
         ");
         Database::setInstance($this->pdo);
 
-        // Custom UsersRepository that swaps PostgreSQL syntax (RETURNING, JOIN aliases) for SQLite-compatible SQL.
+        // Repository subclasses swap PostgreSQL-specific SQL for SQLite-compatible equivalents.
         $this->auth = new AuthService(
             new class extends UsersRepository {
                 public function create(string $username, string $email, string $passwordHash, int $roleId): int
