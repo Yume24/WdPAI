@@ -33,16 +33,6 @@ final class Session
         return $_SESSION[$key] ?? $default;
     }
 
-    public static function has(string $key): bool
-    {
-        return isset($_SESSION[$key]);
-    }
-
-    public static function forget(string $key): void
-    {
-        unset($_SESSION[$key]);
-    }
-
     public static function regenerate(): void
     {
         session_regenerate_id(true);

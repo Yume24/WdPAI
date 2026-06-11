@@ -36,9 +36,4 @@ final class Csrf
         }
         return null;
     }
-
-    public static function field(): string
-    {
-        return '<input type="hidden" name="_csrf" value="' . htmlspecialchars(self::token(), ENT_QUOTES) . '">';
-    }
 }

@@ -2,18 +2,8 @@
 
 namespace FurEver\Repositories;
 
-use FurEver\Models\UserProfile;
-
 class UserProfilesRepository extends Repository
 {
-    public function findByUserId(int $userId): ?UserProfile
-    {
-        $stmt = $this->pdo->prepare('SELECT * FROM user_profiles WHERE user_id = :id');
-        $stmt->execute([':id' => $userId]);
-        $row = $stmt->fetch();
-        return $row ? UserProfile::fromRow($row) : null;
-    }
-
     public function upsert(
         int $userId,
         ?string $fullName,

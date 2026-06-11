@@ -9,11 +9,6 @@ use FurEver\Core\View;
 
 abstract class AppController
 {
-    protected function isGet(): bool
-    {
-        return ($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'GET';
-    }
-
     protected function isPost(): bool
     {
         return ($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST';

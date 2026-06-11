@@ -119,10 +119,4 @@ final class AuthService
         }
         return $this->users->findById($id);
     }
-
-    public function hasRole(string ...$roles): bool
-    {
-        $current = Session::role();
-        return $current !== null && in_array($current, $roles, true);
-    }
 }

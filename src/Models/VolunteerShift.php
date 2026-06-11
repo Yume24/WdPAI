@@ -31,11 +31,6 @@ final class VolunteerShift
         );
     }
 
-    public function dayOfWeek(): string
-    {
-        return date('D', strtotime($this->shiftDate));
-    }
-
     public function timeRange(): string
     {
         return substr($this->startTime, 0, 5) . '–' . substr($this->endTime, 0, 5);

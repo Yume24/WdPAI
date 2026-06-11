@@ -30,15 +30,6 @@ final class VolunteerAssignmentsRepository extends Repository
         $stmt->execute([':v' => $volunteerId, ':s' => $shiftId]);
     }
 
-    public function isSignedUp(int $volunteerId, int $shiftId): bool
-    {
-        $stmt = $this->pdo->prepare(
-            'SELECT 1 FROM volunteer_assignments WHERE volunteer_id = :v AND shift_id = :s LIMIT 1'
-        );
-        $stmt->execute([':v' => $volunteerId, ':s' => $shiftId]);
-        return (bool) $stmt->fetchColumn();
-    }
-
     /** @return VolunteerShift[] */
     public function shiftsForVolunteer(int $volunteerId, ?string $fromDate = null): array
     {
