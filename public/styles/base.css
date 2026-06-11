@@ -42,6 +42,10 @@
 
 *, *::before, *::after { box-sizing: border-box; }
 
+@view-transition {
+  navigation: auto;
+}
+
 body {
   margin: 0;
   font-family: var(--font-family);
