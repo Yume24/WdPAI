@@ -34,7 +34,7 @@
   gap: 0.75rem; box-shadow: 0 4px 20px rgba(0,0,0,0.15);
 }
 .home-hero-search input {
-  flex: 1; border: none; background: none; outline: none;
+  flex: 1; min-width: 0; border: none; background: none; outline: none;
   font-family: var(--font-family); font-size: 1rem; color: var(--color-text-heading);
 }
 .home-hero-search input::placeholder { color: var(--color-text-muted); }
@@ -64,6 +64,14 @@
   .dashboard-grid { grid-template-columns: 1fr; }
 }
 
+/* the 7-day week grid needs the full content width to breathe */
+@media (max-width: 1600px) {
+  .schedule-layout { grid-template-columns: 1fr; }
+}
+@media (max-width: 1300px) {
+  .week-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
 @media (max-width: 1024px) {
   .animals-layout { grid-template-columns: 1fr; }
   .filter-panel {
@@ -75,7 +83,6 @@
   .filter-panel.open { display: block; }
   .filter-toggle-btn { display: inline-flex; }
   .animal-profile-grid { grid-template-columns: 1fr; }
-  .schedule-layout { grid-template-columns: 1fr; }
 }
 
 @media (max-width: 768px) {
@@ -104,7 +111,6 @@
   .animals-grid { grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); }
   .data-table th:nth-child(n+5),
   .data-table td:nth-child(n+5) { display: none; }
-  .week-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 
 @media (max-width: 480px) {
@@ -113,4 +119,5 @@
   .home-hero-title { font-size: 1.625rem; }
   .animals-grid { grid-template-columns: 1fr; }
   .week-grid { grid-template-columns: 1fr; }
+  .home-nav-logo span { display: none; }
 }
