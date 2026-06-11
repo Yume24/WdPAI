@@ -2,7 +2,6 @@
 
 namespace FurEver\Controllers;
 
-use FurEver\Core\Env;
 use FurEver\Core\View;
 use Throwable;
 
@@ -28,11 +27,16 @@ final class ErrorController extends AppController
 
     public function render500(?Throwable $e = null): void
     {
+        if ($e !== null) {
+            error_log(sprintf(
+                '[FurEver] Unhandled %s: %s in %s:%d',
+                $e::class,
+                $e->getMessage(),
+                $e->getFile(),
+                $e->getLine()
+            ));
+        }
         http_response_code(500);
-        $debug = Env::get('APP_ENV', 'production') === 'development';
-        $detail = ($debug && $e !== null)
-            ? $e->getMessage() . "\n" . $e->getTraceAsString()
-            : null;
-        View::output('500', ['title' => 'Server error – FurEver', 'detail' => $detail]);
+        View::output('500', ['title' => 'Server error – FurEver']);
     }
 }

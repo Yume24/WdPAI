@@ -1,10 +1,10 @@
 <?php if (!empty($flashes)): ?>
   <div class="flash-stack">
-    <?php foreach ($flashes as $type => $messages): ?>
-      <?php foreach ((array) $messages as $msg): ?>
-        <div class="alert alert-<?= htmlspecialchars($type, ENT_QUOTES) ?>">
-          <i class="fa-solid <?= $type === 'success' ? 'fa-circle-check' : ($type === 'error' ? 'fa-circle-exclamation' : 'fa-circle-info') ?>"></i>
-          <span><?= htmlspecialchars((string) $msg) ?></span>
+    <?php foreach ($flashes as $flashType => $flashMessages): ?>
+      <?php foreach ((array) $flashMessages as $flashMsg): ?>
+        <div class="alert alert-<?= htmlspecialchars($flashType, ENT_QUOTES) ?>">
+          <i class="fa-solid <?= $flashType === 'success' ? 'fa-circle-check' : ($flashType === 'error' ? 'fa-circle-exclamation' : 'fa-circle-info') ?>"></i>
+          <span><?= htmlspecialchars((string) $flashMsg) ?></span>
         </div>
       <?php endforeach; ?>
     <?php endforeach; ?>

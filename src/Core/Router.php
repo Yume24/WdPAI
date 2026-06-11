@@ -68,6 +68,10 @@ final class Router
                 $controller = new $controllerClass();
                 $controller->{$route['action']}();
             } catch (Throwable $e) {
+                // discard any partially rendered output so the error page stands alone
+                while (ob_get_level() > 0) {
+                    ob_end_clean();
+                }
                 (new ErrorController())->render500($e);
             }
             return;
