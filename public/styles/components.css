@@ -149,40 +149,19 @@
 .filter-tab:hover { border-color: var(--color-primary); color: var(--color-primary); }
 .filter-tab.active { background: var(--color-primary); border-color: var(--color-primary); color: #fff; }
 
-.schedule-layout { display: grid; grid-template-columns: 1fr 280px; gap: 1.5rem; align-items: start; }
-.calendar-wrap { overflow-x: auto; border-radius: var(--radius-lg); box-shadow: var(--shadow-card); }
-.calendar-grid {
+.schedule-layout { display: grid; grid-template-columns: minmax(0, 1fr) 280px; gap: 1.5rem; align-items: start; }
+.week-grid {
   display: grid;
-  grid-template-columns: 64px repeat(7, 1fr);
-  background: var(--color-border);
-  gap: 1px;
-  min-width: 560px;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 0.5rem;
 }
-.cal-corner,
-.cal-header-cell {
-  background: var(--color-sidebar-bg);
-  padding: 0.625rem 0.5rem;
-  text-align: center;
-  font-size: 0.6875rem; font-weight: 700;
-  text-transform: uppercase; letter-spacing: 0.05em;
-  color: var(--color-text-muted);
+.week-day {
+  background: var(--color-input-bg);
+  border-radius: var(--radius-md);
+  padding: 0.625rem;
+  min-width: 0;
+  overflow-wrap: anywhere;
 }
-.cal-header-cell.today { background: var(--color-primary-light); color: var(--color-primary); }
-.cal-time-cell {
-  background: var(--color-card);
-  padding: 0.5rem 0.625rem;
-  font-size: 0.6875rem; color: var(--color-text-muted);
-  text-align: right; white-space: nowrap; vertical-align: top;
-}
-.cal-slot { background: var(--color-card); min-height: 64px; padding: 0.25rem; vertical-align: top; }
-.cal-event {
-  background: var(--color-primary-light); color: var(--color-primary);
-  border-left: 3px solid var(--color-primary);
-  border-radius: var(--radius-sm);
-  padding: 0.25rem 0.5rem; font-size: 0.6875rem; font-weight: 700;
-  line-height: 1.4; margin-bottom: 2px;
-}
-.cal-event.amber { background: var(--color-amber); color: #92400e; border-color: #f6c90e; }
 
 .animal-profile-grid { display: grid; grid-template-columns: 1fr 340px; gap: 1.5rem; align-items: start; }
 .animal-hero {

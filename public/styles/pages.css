@@ -104,6 +104,7 @@
   .animals-grid { grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); }
   .data-table th:nth-child(n+5),
   .data-table td:nth-child(n+5) { display: none; }
+  .week-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 
 @media (max-width: 480px) {
@@ -111,5 +112,5 @@
   .auth-form-panel { padding: 2rem 1.25rem; }
   .home-hero-title { font-size: 1.625rem; }
   .animals-grid { grid-template-columns: 1fr; }
-  .calendar-grid { grid-template-columns: 64px repeat(3, 1fr); }
+  .week-grid { grid-template-columns: 1fr; }
 }

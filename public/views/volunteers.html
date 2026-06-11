@@ -46,9 +46,9 @@ $nextWeek = date('Y-m-d', strtotime($weekStart . ' +7 days'));
       <div>
         <div class="card">
           <div class="card-body" style="padding:1rem">
-            <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:0.5rem">
+            <div class="week-grid">
               <?php foreach ($days as $day): ?>
-                <div style="background:var(--color-input);border-radius:var(--radius-md);padding:0.625rem">
+                <div class="week-day">
                   <div class="text-xs font-bold text-heading" style="text-transform:uppercase">
                     <?= htmlspecialchars(date('D', strtotime($day))) ?>
                   </div>
