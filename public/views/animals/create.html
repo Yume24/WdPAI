@@ -64,11 +64,11 @@
             </div>
             <div class="form-group">
               <label class="form-label" for="date_of_birth">Date of birth</label>
-              <input class="form-input" id="date_of_birth" name="date_of_birth" type="date">
+              <input class="form-input" id="date_of_birth" name="date_of_birth" type="date" max="<?= date('Y-m-d') ?>">
             </div>
             <div class="form-group">
               <label class="form-label" for="intake_date">Intake date</label>
-              <input class="form-input" id="intake_date" name="intake_date" type="date" value="<?= date('Y-m-d') ?>" required>
+              <input class="form-input" id="intake_date" name="intake_date" type="date" value="<?= date('Y-m-d') ?>" max="<?= date('Y-m-d') ?>" required>
             </div>
           </div>
 

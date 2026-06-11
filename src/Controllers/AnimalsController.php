@@ -101,7 +101,8 @@ final class AnimalsController extends AppController
         $v = (new Validator($data))
             ->required('name')
             ->required('species_id')
-            ->required('intake_date')->date('intake_date')
+            ->required('intake_date')->date('intake_date')->notFuture('intake_date')
+            ->date('date_of_birth')->notFuture('date_of_birth')
             ->in('gender', Animal::genders())
             ->in('status', Animal::statuses());
         if ($v->fails()) {
@@ -164,6 +165,18 @@ final class AnimalsController extends AppController
             'status'        => (string) $this->postParam('status', $animal->status),
             'description'   => $this->postParam('description') ?: $animal->description,
         ];
+
+        $v = (new Validator($data))
+            ->required('name')
+            ->required('species_id')
+            ->required('intake_date')->date('intake_date')->notFuture('intake_date')
+            ->date('date_of_birth')->notFuture('date_of_birth')
+            ->in('gender', Animal::genders())
+            ->in('status', Animal::statuses());
+        if ($v->fails()) {
+            $this->flash('error', $v->firstErrorString());
+            $this->redirect('/animals/' . $id . '/edit');
+        }
 
         try {
             $photoPath = $this->uploads->storeImage($_FILES['photo'] ?? []);

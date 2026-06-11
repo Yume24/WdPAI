@@ -79,6 +79,26 @@ final class Validator
         return $this;
     }
 
+    public function notFuture(string $field, string $message = 'cannot be in the future'): self
+    {
+        $value = $this->data[$field] ?? null;
+        if ($value !== null && $value !== '' && ($ts = strtotime((string) $value)) !== false
+            && date('Y-m-d', $ts) > date('Y-m-d')) {
+            $this->errors[$field][] = $message;
+        }
+        return $this;
+    }
+
+    public function notPast(string $field, string $message = 'cannot be in the past'): self
+    {
+        $value = $this->data[$field] ?? null;
+        if ($value !== null && $value !== '' && ($ts = strtotime((string) $value)) !== false
+            && date('Y-m-d', $ts) < date('Y-m-d')) {
+            $this->errors[$field][] = $message;
+        }
+        return $this;
+    }
+
     public function fails(): bool
     {
         return !empty($this->errors);
@@ -95,7 +115,7 @@ final class Validator
         $msgs = [];
         foreach ($this->errors as $field => $messages) {
             foreach ($messages as $m) {
-                $msgs[] = ucfirst($field) . ' ' . $m;
+                $msgs[] = ucfirst(str_replace('_', ' ', $field)) . ' ' . $m;
             }
         }
         return implode('. ', $msgs);
