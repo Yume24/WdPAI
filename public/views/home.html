@@ -19,7 +19,9 @@ $stats = $stats ?? [];
   <div class="home-nav-actions">
     <?php if (!empty($isLoggedIn)): ?>
       <a href="/dashboard" class="btn btn-ghost btn-sm">Dashboard</a>
-      <a href="/my-adoptions" class="btn btn-outline btn-sm">My Requests</a>
+      <?php if (($currentRole ?? null) === \FurEver\Models\Role::ADOPTER): ?>
+        <a href="/my-adoptions" class="btn btn-outline btn-sm">My Requests</a>
+      <?php endif; ?>
     <?php else: ?>
       <a href="/login" class="btn btn-outline btn-sm">Sign in</a>
       <a href="/register" class="btn btn-primary btn-sm">Get started</a>
