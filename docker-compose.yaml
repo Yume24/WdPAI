@@ -46,6 +46,9 @@ services:
       APP_URL: ${APP_URL}
       SESSION_LIFETIME: ${SESSION_LIFETIME}
       UPLOAD_MAX_BYTES: ${UPLOAD_MAX_BYTES}
+    # uploads dir comes from the bind mount owned by the host user;
+    # open it up so the www-data fpm workers can write uploaded photos
+    command: sh -c "chmod -R a+rwX /app/public/uploads && exec php-fpm"
     volumes:
       - .:/app
     depends_on:
