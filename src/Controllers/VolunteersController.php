@@ -45,9 +45,7 @@ final class VolunteersController extends AppController
         $userId = (int) Session::userId();
         $myShifts = $this->assignments->shiftsForVolunteer($userId, date('Y-m-d'));
 
-        $weekStart = $this->mondayOfThisWeek();
-        $weekEnd = date('Y-m-d', strtotime($weekStart . ' +13 days'));
-        $allShifts = $this->shifts->inRange($weekStart, $weekEnd);
+        $allShifts = $this->shifts->inRange(date('Y-m-d'), date('Y-m-d', strtotime('+14 days')));
 
         $signedUpIds = [];
         foreach ($myShifts as $s) {
@@ -78,11 +76,15 @@ final class VolunteersController extends AppController
         ];
 
         $v = (new Validator($data))
-            ->required('shift_date')->date('shift_date')
+            ->required('shift_date')->date('shift_date')->notPast('shift_date')
             ->required('start_time')
             ->required('end_time');
         if ($v->fails()) {
             $this->flash('error', $v->firstErrorString());
+            $this->redirect('/volunteers');
+        }
+        if ($data['end_time'] <= $data['start_time']) {
+            $this->flash('error', 'End time must be after start time.');
             $this->redirect('/volunteers');
         }
 

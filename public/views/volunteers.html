@@ -77,10 +77,23 @@ $nextWeek = date('Y-m-d', strtotime($weekStart . ' +7 days'));
                         </form>
                       <?php endif; ?>
                       <?php if (!empty($canSignUp)): ?>
-                        <form method="POST" action="/api/shifts/<?= (int) $shift->id ?>/signup" class="js-shift-signup" style="margin:0.375rem 0 0">
-                          <input type="hidden" name="_csrf" value="<?= htmlspecialchars($csrfToken, ENT_QUOTES) ?>">
-                          <button class="btn btn-outline btn-sm" type="submit" style="padding:0.25rem 0.5rem;font-size:0.75rem">Sign up</button>
-                        </form>
+                        <?php
+                        $joined = false;
+                        foreach ($shift->assignments as $a) {
+                            if ($a->volunteerId === (int) $currentUid) {
+                                $joined = true;
+                                break;
+                            }
+                        }
+                        ?>
+                        <?php if ($joined): ?>
+                          <span class="badge badge-available" style="margin-top:0.375rem;display:inline-block">Joined</span>
+                        <?php else: ?>
+                          <form method="POST" action="/api/shifts/<?= (int) $shift->id ?>/signup" class="js-shift-signup" style="margin:0.375rem 0 0">
+                            <input type="hidden" name="_csrf" value="<?= htmlspecialchars($csrfToken, ENT_QUOTES) ?>">
+                            <button class="btn btn-outline btn-sm" type="submit" style="padding:0.25rem 0.5rem;font-size:0.75rem">Sign up</button>
+                          </form>
+                        <?php endif; ?>
                       <?php endif; ?>
                     </div>
                   <?php endforeach; ?>
@@ -101,7 +114,7 @@ $nextWeek = date('Y-m-d', strtotime($weekStart . ' +7 days'));
               <input type="hidden" name="_csrf" value="<?= htmlspecialchars($csrfToken, ENT_QUOTES) ?>">
               <div class="form-group">
                 <label class="form-label" for="shift_date">Date</label>
-                <input class="form-input" id="shift_date" name="shift_date" type="date" required>
+                <input class="form-input" id="shift_date" name="shift_date" type="date" min="<?= date('Y-m-d') ?>" required>
               </div>
               <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.75rem">
                 <div class="form-group">
