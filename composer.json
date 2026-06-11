@@ -1,6 +1,6 @@
 {
     "name": "furever/app",
-    "description": "FurEver — animal shelter management system (custom PHP MVC).",
+    "description": "FurEver: animal shelter management system",
     "type": "project",
     "license": "MIT",
     "require": {
