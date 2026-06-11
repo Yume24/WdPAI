@@ -140,7 +140,7 @@
 .topbar-actions { display: flex; align-items: center; gap: 0.75rem; }
 .sidebar-toggle-btn { display: none; }
 
-.admin-content { grid-column: 2; padding: 2rem; min-height: 0; }
+.admin-content { grid-column: 2; padding: 2rem; min-height: 0; min-width: 0; }
 
 .page-header {
   display: flex;
