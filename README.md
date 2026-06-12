@@ -20,8 +20,7 @@ dyżury, a adoptujący przeglądają zwierzęta i śledzą status swoich wniosk�
 10. [Testy](#testy)
 11. [Scenariusz testowy](#scenariusz-testowy)
 12. [Zrzuty ekranu](#zrzuty-ekranu)
-13. [Checklista wymagań](#checklista-wymagań)
-14. [Struktura projektu](#struktura-projektu)
+13. [Struktura projektu](#struktura-projektu)
 
 ---
 
